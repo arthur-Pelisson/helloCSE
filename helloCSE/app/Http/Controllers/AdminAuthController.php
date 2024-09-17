@@ -10,7 +10,11 @@ use App\Contracts\AdminAuthInterface;
 class AdminAuthController extends Controller implements AdminAuthInterface
 {
 
-
+    /**
+     * Register a new admin
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function register(Request $request){
         // validate the request data
         $validator = Validator::make($request->all(), [
@@ -46,6 +50,11 @@ class AdminAuthController extends Controller implements AdminAuthInterface
         ], 201);
     }
 
+    /**
+     * Login admin and create token
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(Request $request){
         // validate the request data
         $validator = Validator::make($request->all(), [
@@ -78,6 +87,11 @@ class AdminAuthController extends Controller implements AdminAuthInterface
         ],200);
     }
 
+    /**
+     * Logout admin (Revoke the token)
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(Request $request){
         // revoke the token
         $request->user()->currentAccessToken()->delete();
