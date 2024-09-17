@@ -17,7 +17,10 @@ class ProfilFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nom' => fake()->name(),
+            'prenom' => fake()->lastName(),
+            'image' => fake()->image(),
+            'statut' => fake()->randomElement(["actif", "inactif", "en attente"]),
         ];
     }
 }
