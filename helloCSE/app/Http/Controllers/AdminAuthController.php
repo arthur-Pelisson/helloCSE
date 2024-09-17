@@ -6,7 +6,8 @@ use App\Models\Administrateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-class AdminAuthController extends Controller
+use App\Contracts\AdminAuthInterface;
+class AdminAuthController extends Controller implements AdminAuthInterface
 {
 
 

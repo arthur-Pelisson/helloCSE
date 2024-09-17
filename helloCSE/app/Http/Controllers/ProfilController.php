@@ -5,62 +5,35 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreprofilRequest;
 use App\Http\Requests\UpdateprofilRequest;
 use App\Models\profil;
-
-class ProfilController extends Controller
+use App\Contracts\ProfileInterface;
+class ProfilController extends Controller implements ProfileInterface
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return profil::all();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreprofilRequest $request)
     {
-        //
+        $validated = $request->validated();
+        return profil::create($validated);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(profil $profil)
     {
-        //
+        return $profil;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(profil $profil)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateprofilRequest $request, profil $profil)
     {
-        //
+        $validated = $request->validated();
+        $profil->update($validated);
+        return $profil;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(profil $profil)
     {
-        //
+        $profil->delete();
+        return response()->json([], 204);
     }
 }
