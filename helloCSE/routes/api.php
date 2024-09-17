@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\ProfilController;
 
-// route de test pour l'application helloCSE pour savoir si l'pplication run correctement
+// route de test pour l'application helloCSE pour savoir si l'application run correctement
 Route::get('/test', function () {
     return response()->json(['test'=>'ok'], 200);
 });
