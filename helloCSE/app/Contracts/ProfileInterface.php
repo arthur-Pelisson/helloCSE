@@ -3,8 +3,8 @@
 namespace App\Contracts;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreprofilRequest;
-use App\Http\Requests\UpdateprofilRequest;
+use App\Http\Requests\profil\StoreprofilRequest;
+use App\Http\Requests\profil\UpdateprofilRequest;
 use App\Models\profil;
 
 interface ProfileInterface

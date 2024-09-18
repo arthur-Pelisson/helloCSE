@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreprofilRequest;
-use App\Http\Requests\UpdateprofilRequest;
+use App\Http\Requests\profil\StoreprofilRequest;
+use App\Http\Requests\profil\UpdateprofilRequest;
 use App\Models\Profil;
 use App\Contracts\ProfileInterface;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -14,12 +14,12 @@ class ProfilController extends Controller implements ProfileInterface
 
     // Define the roles and the corresponding methods
     // we could do middlewar to check the role but overkill to do it here
-    private $roles = [
+    private $rolesDispatcher = [
         "ADMIN" => "indexAdmin",
         "GUEST" => "indexGuest"
     ];
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource by role.
      *
      * @return  \Illuminate\Http\JsonResponse
      */
@@ -27,10 +27,15 @@ class ProfilController extends Controller implements ProfileInterface
     {
         $isAdmin = (new AdminContoller)->isAdmin();
         $role = $isAdmin ? "ADMIN" : "GUEST";
-        $method = $this->roles[$role];
+        $method = $this->rolesDispatcher[$role];
         return $this->$method();
     }
 
+    /**
+     * Display a listing of the resource for Admin.
+     *
+     * @return  \Illuminate\Http\JsonResponse
+     */
     public function indexAdmin()
     {
         $profils = Profil::all();
@@ -39,6 +44,11 @@ class ProfilController extends Controller implements ProfileInterface
     }
     
 
+    /**
+     * Display a listing of the resource for Guest.
+     *
+     * @return  \Illuminate\Http\JsonResponse
+     */
     public function indexGuest()
     {
         $profils = Profil::where('statut', 'actif')->get();
@@ -56,7 +66,17 @@ class ProfilController extends Controller implements ProfileInterface
     public function store(StoreprofilRequest $request)
     {
         $validated = $request->validated();
-        return response()->json(profil::create($validated), 201);
+        if (isset($validated['image'])) {
+            $validated['image'] = base64_decode($validated['image']);
+        }
+        Profil::create([
+            'nom' => $validated['nom'],
+            'prenom' => $validated['prenom'],
+            'image' => $validated['image'],
+            'statut' => $validated['statut'],
+            
+        ]);
+        return response()->json(["message" => "Profile create"], 201);
     }
 
     /**
@@ -79,9 +99,24 @@ class ProfilController extends Controller implements ProfileInterface
      */
     public function update(UpdateprofilRequest $request, profil $profil)
     {
+        
         $validated = $request->validated();
-        $profil->update($validated);
-        return response()->json($profil, 200);
+
+        if (isset($validated['image'])) {
+            $validated['image'] = base64_decode($validated['image']);
+        }
+
+        $profil->update([
+            'nom' => $validated['nom'],
+            'prenom' => $validated['prenom'],
+            'image' => $validated['image'],
+            'statut' => $validated['statut'],
+        ]);
+        if ($profil->wasChanged()) {
+            return response()->json(["message" => "Profile updated"], 200);
+        }
+
+        return response()->json(["message" => "An error occured"], 500);
     }
 
     /**
@@ -92,8 +127,11 @@ class ProfilController extends Controller implements ProfileInterface
      */
     public function destroy(profil $profil)
     {
-        $profil->delete();
-        return response()->json([], 204);
+        $delete = $profil->delete();
+        if ($delete) {
+            return response()->json(["message" => "Profile deleted"], 200);
+        }
+        return response()->json(["message" => "An error occured"], 500);
     }
 
     /**
