@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Contracts\AdminInterface;
-use Illuminate\Http\Request;
+
+use Laravel\Sanctum\Sanctum;
+
 class AdminContoller extends Controller implements AdminInterface
 {
     /**
@@ -12,7 +14,8 @@ class AdminContoller extends Controller implements AdminInterface
      */
     public function isAdmin()
     {
-        if (Auth::check()) {
+        
+        if (auth('sanctum')->check()) {
             return true;
         }
 

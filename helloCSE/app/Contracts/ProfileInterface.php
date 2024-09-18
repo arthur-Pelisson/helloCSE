@@ -14,7 +14,7 @@ interface ProfileInterface
      *
      * @return  \Illuminate\Http\JsonResponse
      */
-    public function index();
+    public function index(Request $request);
 
     /**
      * Store a newly created resource in storage.
