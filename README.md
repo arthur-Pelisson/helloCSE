@@ -32,6 +32,12 @@ Then migrate it
 php artisan migrate
 ~~~
 
+Seed database 
+
+~~~
+php artisan db:seed
+~~~
+
 Start the server  
 
 ~~~bash  
