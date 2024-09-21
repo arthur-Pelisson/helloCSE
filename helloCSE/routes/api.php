@@ -23,9 +23,9 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
   // route for profil
   Route::post('profil',[ProfilController::class,'store']);
-  Route::put('profil',[ProfilController::class,'update']);
-  Route::delete('profil',[ProfilController::class,'destroy']);
+  Route::put('profil/{profil}',[ProfilController::class,'update']);
+  Route::delete('profil/{profil}',[ProfilController::class,'destroy']);
 });
+Route::get('profil',[ProfilController::class,'index']);
 
 // route profil not protected
-Route::get('profil',[ProfilController::class,'index']);
