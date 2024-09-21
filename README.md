@@ -1,4 +1,3 @@
-
 # HelloCSE test technique 
 
 Technique test made withLaravel.
@@ -52,4 +51,3 @@ http://{uri}:{post}/docs/api
 ~~~
 http://{uri}:{port}/telescope
 ~~~
-
