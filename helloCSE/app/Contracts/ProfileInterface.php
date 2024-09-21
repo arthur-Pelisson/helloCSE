@@ -14,7 +14,21 @@ interface ProfileInterface
      *
      * @return  \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request);
+    public function index();
+
+     /**
+     * Display a listing of the resource for Admin.
+     *
+     * @return  \Illuminate\Http\JsonResponse
+     */
+    public function indexAdmin();
+
+    /**
+     * Display a listing of the resource for Guest.
+     *
+     * @return  \Illuminate\Http\JsonResponse
+     */
+    public function indexGuest();
 
     /**
      * Store a newly created resource in storage.

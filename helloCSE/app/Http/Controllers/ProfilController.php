@@ -8,12 +8,19 @@ use App\Models\Profil;
 use App\Contracts\ProfileInterface;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
+
 class ProfilController extends Controller implements ProfileInterface
 {
     use AuthorizesRequests;
 
-    // Define the roles and the corresponding methods
-    // we could do middlewar to check the role but overkill to do it here
+    /**
+     * The roles dispatcher
+     * To simplify the code, we use a dispatcher to call the right method
+     * @var array
+     */
+    
     private $rolesDispatcher = [
         "ADMIN" => "indexAdmin",
         "GUEST" => "indexGuest"
@@ -23,7 +30,7 @@ class ProfilController extends Controller implements ProfileInterface
      *
      * @return  \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index()
     {
         $isAdmin = (new AdminContoller)->isAdmin();
         $role = $isAdmin ? "ADMIN" : "GUEST";
@@ -39,6 +46,7 @@ class ProfilController extends Controller implements ProfileInterface
     public function indexAdmin()
     {
         $profils = Profil::all();
+        // Encode the image to base64 to display it in the json response
         $this->encodeImage($profils, 'image');
         return response()->json($profils, 200);
     }
