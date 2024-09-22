@@ -60,9 +60,11 @@ class ProfilController extends Controller implements ProfileInterface
     public function indexGuest()
     {
         $profils = Profil::where('statut', 'actif')->get();
+        //remove the statut field from the response
+        $profils->makeHidden(['statut']);
         // Encode the image to base64 to display it in the json response
         $this->encodeImage($profils, 'image');
-        return response()->json(['data' => $profils], 200);
+        return response()->json($profils, 200);
     }
 
     /**
@@ -77,13 +79,17 @@ class ProfilController extends Controller implements ProfileInterface
         if (isset($validated['image'])) {
             $validated['image'] = base64_decode($validated['image']);
         }
-        Profil::create([
+        $newProfil = Profil::create([
             'nom' => $validated['nom'],
             'prenom' => $validated['prenom'],
             'image' => $validated['image'],
             'statut' => $validated['statut'],
             
         ]);
+
+        if (!$newProfil) {
+            return response()->json(["message" => "An error occured"], 500);
+        }
         return response()->json(["message" => "Profile create"], 201);
     }
 
