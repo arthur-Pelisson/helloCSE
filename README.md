@@ -33,7 +33,7 @@ php artisan migrate
 
 Seed database 
 
-~~~
+~~~bash  
 php artisan db:seed
 ~~~
 
@@ -43,11 +43,17 @@ Start the server
 php artisan serve
 ~~~
 
-## Documentation
+## Test 
+
+~~~bash  
+php artisan test
 ~~~
+
+## Documentation
+~~~bash  
 http://{uri}:{post}/docs/api
 ~~~
 ## Debug tools 
-~~~
+~~~bash  
 http://{uri}:{port}/telescope
 ~~~
