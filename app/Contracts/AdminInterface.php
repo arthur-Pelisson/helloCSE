@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Contracts;
-use Illuminate\Http\Request;
 interface AdminInterface
 {
-    public function isAdmin();
+    /**
+     * Check if the user is connected (IsAdmin)
+     * @return bool
+     */
+    public function isAdmin():bool;
 }

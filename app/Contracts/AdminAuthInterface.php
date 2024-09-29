@@ -3,29 +3,30 @@
 namespace App\Contracts;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\AdminAuth\LoginAdminRequest;
+use App\Http\Requests\AdminAuth\RegisterAdminRequest;
 
 interface AdminAuthInterface
 {
     /**
-     * Register a new user
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Register a User
+     * @param RegisterAdminRequest $request
+     * @return JsonResponse
      */
-    public function register(Request $request);
+    public function register(RegisterAdminRequest $request): JsonResponse;
 
     /**
      * Login user and create token
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param LoginAdminRequest $request
+     * @return JsonResponse
      */
-
-    public function login(Request $request);
+    public function login(LoginAdminRequest $request): JsonResponse;
 
     /**
      * Logout user (Revoke the token)
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-
-    public function logout(Request $request);
+    public function logout(Request $request) : JsonResponse;
 }

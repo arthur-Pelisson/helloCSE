@@ -6,19 +6,17 @@ use App\Contracts\AdminInterface;
 
 use Laravel\Sanctum\Sanctum;
 
-class AdminContoller extends Controller implements AdminInterface
+class AdminController extends Controller 
 {
     /**
      * Check if the user is connected (IsAdmin)
      * @return bool
      */
-    public function isAdmin()
+    static public function isAdmin(): bool
     {
-        
         if (auth('sanctum')->check()) {
             return true;
         }
-
         return false;
     }
 }
