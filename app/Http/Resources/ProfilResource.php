@@ -18,7 +18,7 @@ class ProfilResource extends JsonResource
             'id' => $this->id,
             'nom' => $this->nom,
             'prenom' => $this->prenom,
-            'image' => $this->image,
+            'image' => $this->encodeImage($this->image),
             'statut' => $this->statut,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
