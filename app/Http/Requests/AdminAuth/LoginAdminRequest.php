@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Requests\profil;
+namespace App\Http\Requests\AdminAuth;
+
+
 use Illuminate\Foundation\Http\FormRequest;
 use App\Enums\StatutProfil;
 use Illuminate\Validation\Rule;
 
-class StoreprofilRequest extends FormRequest
+class LoginAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +25,8 @@ class StoreprofilRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
-            'image' => 'required|string',
-            'statut' => ['required', Rule::enum(StatutProfil::class)],
+            'email' => 'required|email',
+            'password' => 'required|string',
         ];
     }
 }

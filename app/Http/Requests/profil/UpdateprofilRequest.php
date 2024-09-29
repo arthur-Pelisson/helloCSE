@@ -27,7 +27,7 @@ class UpdateprofilRequest extends FormRequest
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
             'image' => 'required|string',
-            'statut' => ['required', Rule::in([StatutProfil::Actif, StatutProfil::Inactif, StatutProfil::EnAttente])],
+            'statut' => ['required', Rule::enum(StatutProfil::class)],
         ];
     }
 }
