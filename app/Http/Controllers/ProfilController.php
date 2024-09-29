@@ -1,166 +1,110 @@
 <?php
 
 namespace App\Http\Controllers;
+
+
+
+use App\Models\Profil;
 use Illuminate\Http\Request;
+use App\Services\ProfilService;
+use Illuminate\Http\JsonResponse;
+use App\Http\Response\ResponseApi;
+use App\Contracts\ProfileInterface;
+use App\Http\Resources\ProfilResource;
+use App\Http\Controllers\AdminController;
+use App\Http\Resources\ProfilCollection;
 use App\Http\Requests\profil\StoreprofilRequest;
 use App\Http\Requests\profil\UpdateprofilRequest;
-use App\Models\Profil;
-use App\Contracts\ProfileInterface;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Auth;
 
 class ProfilController extends Controller implements ProfileInterface
 {
     use AuthorizesRequests;
 
+    private $profilService;
+    private $isAdmin;
+    private $profilCollection;
+
     /**
-     * The roles dispatcher
-     * To simplify the code, we use a dispatcher to call the right method
-     * @var array
+     * @param ProfilService $profilService
+     * @param AdminController $adminController
+     * @param ProfilCollection $profilCollection
      */
-    
-    private $rolesDispatcher = [
-        "ADMIN" => "indexAdmin",
-        "GUEST" => "indexGuest"
-    ];
+    public function __construct(ProfilService $profilService, AdminController $adminController)
+    {
+        $this->profilService = $profilService;
+        $this->isAdmin = $adminController::isAdmin();
+    }
+
     /**
      * Display a listing of the resource by role.
      *
-     * @return  \Illuminate\Http\JsonResponse
+     * @param Profil $profil
+     * @return  JsonResponse
      */
-    public function index()
+    public function index(Request $request, Profil $profil): JsonResponse
     {
-        $isAdmin = (new AdminContoller)->isAdmin();
-        $role = $isAdmin ? "ADMIN" : "GUEST";
-        $method = $this->rolesDispatcher[$role];
-        return $this->$method();
+        $profils = $this->profilService->index($profil, $this->isAdmin);
+        return ResponseApi::success(new ProfilCollection($profils), "Profils found", 200);
     }
 
     /**
-     * Display a listing of the resource for Admin.
-     *
-     * @return  \Illuminate\Http\JsonResponse
-     */
-    public function indexAdmin()
-    {
-        $profils = Profil::all();
-        // Encode the image to base64 to display it in the json response
-        $this->encodeImage($profils, 'image');
-        return response()->json($profils, 200);
-    }
-    
-
-    /**
-     * Display a listing of the resource for Guest.
-     *
-     * @return  \Illuminate\Http\JsonResponse
-     */
-    public function indexGuest()
-    {
-        $profils = Profil::where('statut', 'actif')->get();
-        //remove the statut field from the response
-        $profils->makeHidden(['statut']);
-        // Encode the image to base64 to display it in the json response
-        $this->encodeImage($profils, 'image');
-        return response()->json($profils, 200);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
+     * Store a newly created profil resource in storage.
      * @param StoreprofilRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function store(StoreprofilRequest $request)
+    public function store(StoreprofilRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-        if (isset($validated['image'])) {
-            $validated['image'] = base64_decode($validated['image']);
-        }
-        $newProfil = Profil::create([
-            'nom' => $validated['nom'],
-            'prenom' => $validated['prenom'],
-            'image' => $validated['image'],
-            'statut' => $validated['statut'],
-            
-        ]);
-
+        $newProfil = $this->profilService->store($request->validated());
         if (!$newProfil) {
-            return response()->json(["message" => "An error occured"], 500);
+            return ResponseApi::error("An error occured", 500);
         }
-        return response()->json(["message" => "Profile create"], 201);
+        return ResponseApi::success(new ProfilResource($newProfil), "Profile created", 201);
     }
 
     /**
-     * Display the specified resource.
+     * Display unique profil resource.
      *
      * @param profil $profil
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function show(profil $profil)
+    public function show(Profil $profil): JsonResponse
     {
-        return response()->json($profil, 200);
+        $profil = $this->profilService->show($profil);
+        if (!$profil) {
+            return ResponseApi::error("Profile not found", 404);
+        }
+        return ResponseApi::success(new ProfilResource($profil), "Profile found", 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the profil resource in storage.
      *
      * @param UpdateprofilRequest $request
      * @param profil $profil
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function update(UpdateprofilRequest $request, profil $profil)
+    public function update(UpdateprofilRequest $request, profil $profil): JsonResponse
     {
-        
-        $validated = $request->validated();
-
-        if (isset($validated['image'])) {
-            $validated['image'] = base64_decode($validated['image']);
+        $profil = $this->profilService->update($request->validated(), $profil);
+        if (!$profil) {
+            return ResponseApi::error("An error occured", 500);
         }
-
-        $profil->update([
-            'nom' => $validated['nom'],
-            'prenom' => $validated['prenom'],
-            'image' => $validated['image'],
-            'statut' => $validated['statut'],
-        ]);
-        if ($profil->wasChanged()) {
-            return response()->json(["message" => "Profile updated"], 200);
-        }
-
-        return response()->json(["message" => "An error occured"], 500);
+        return ResponseApi::success(new ProfilResource($profil), "Profile updated", 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the profil resource from storage.
      *
      * @param profil $profil
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function destroy(profil $profil)
+    public function destroy(Profil $profil): JsonResponse
     {
-        $delete = $profil->delete();
-        if ($delete) {
-            return response()->json(["message" => "Profile deleted"], 200);
+        $profil = $this->profilService->destroy($profil);
+        if (!$profil) {
+            return ResponseApi::error("An error occured", 500);
         }
-        return response()->json(["message" => "An error occured"], 500);
-    }
-
-    /**
-     * Encode the image to base64 to display it in the json response
-     *
-     * @param Collection $profils
-     * @param string $target
-     * @return void
-     */protected function encodeImage(Collection &$profils, string $target): void
-    {
-        foreach ($profils as $profil) {
-            if (isset($profil->$target)) {
-                $imageBase64 = base64_encode($profil->$target);
-                $profil->$target = $imageBase64;
-            }
-        }
+        return ResponseApi::success(null, "Profile deleted", 200);
     }
 }

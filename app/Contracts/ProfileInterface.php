@@ -2,65 +2,53 @@
 
 namespace App\Contracts;
 
+use App\Models\profil;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Http\Requests\profil\StoreprofilRequest;
 use App\Http\Requests\profil\UpdateprofilRequest;
-use App\Models\profil;
+use Illuminate\Database\Eloquent\Casts\Json;
+use Illuminate\Support\Js;
 
 interface ProfileInterface
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource by role.
      *
-     * @return  \Illuminate\Http\JsonResponse
+     * @param Profil $profil
+     * @return  JsonResponse
      */
-    public function index();
-
-     /**
-     * Display a listing of the resource for Admin.
-     *
-     * @return  \Illuminate\Http\JsonResponse
-     */
-    public function indexAdmin();
+    public function index(Request $request, Profil $profil): JsonResponse;
 
     /**
-     * Display a listing of the resource for Guest.
-     *
-     * @return  \Illuminate\Http\JsonResponse
-     */
-    public function indexGuest();
-
-    /**
-     * Store a newly created resource in storage.
-     *
+     * Store a newly created profil resource in storage.
      * @param StoreprofilRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-
-    public function store(StoreprofilRequest $request);
+    public function store(StoreprofilRequest $request): JsonResponse;
 
     /**
-     * Display the specified resource.
+     * Display unique profil resource.
      *
      * @param profil $profil
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function show(profil $id);
+    public function show(Profil $profil): JsonResponse;
 
     /**
-     * Update the specified resource in storage.
+     * Update the profil resource in storage.
      *
      * @param UpdateprofilRequest $request
      * @param profil $profil
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function update(UpdateprofilRequest $request, profil $profil);
+    public function update(UpdateprofilRequest $request, profil $profil): JsonResponse;
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the profil resource from storage.
      *
      * @param profil $profil
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function destroy(profil $profil);
+    public function destroy(Profil $profil): JsonResponse;
 }
