@@ -20,7 +20,7 @@ class ProfilService {
         if ($role === "ADMIN") {
             return $profil->all();
         }
-        return $profil->ByStatus(StatutProfil::Actif)->get();
+        return $profil->ByStatus(StatutProfil::ACTIF)->get();
     }
 
     /**

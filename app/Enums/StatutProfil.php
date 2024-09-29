@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum StatutProfil: string
 {
-    case Actif = 'actif';
-    case Inactif = 'inactif';
-    case EnAttente = 'en attente';
+    case ACTIF = 'actif';
+    case INACTIF = 'inactif';
+    case EN_ATTENTE = 'en attente';
 }

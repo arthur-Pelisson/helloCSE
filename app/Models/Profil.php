@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Enums\StatutProfil;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Profil extends Model
 {
     use HasFactory;
@@ -16,15 +18,19 @@ class Profil extends Model
         "statut",
     ];
 
+    protected $casts = [
+        'statut' => StatutProfil::class,
+    ];
+
 
     /**
      * @param  $query
      * @param StatutProfil $status
-     * @var array
+     * @return void
      */
-    public function scopeByStatus($query, StatutProfil $status): array
+    public function scopeByStatus($query, StatutProfil $status): void
     {
-        return $query->where('statut', $status->value);
+         $query->where('statut', $status->value);
     }
     
 }
