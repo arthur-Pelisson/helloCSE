@@ -17,6 +17,18 @@ use App\Http\Requests\profil\StoreprofilRequest;
 use App\Http\Requests\profil\UpdateprofilRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+/**
+ * @var ProfilService $profilService
+ * @var bool $isAdmin
+ * @var ProfilCollection $profilCollection
+ * @method bool isAdmin()
+ * @method JsonResponse index(Request $request, Profil $profil)
+ * @method JsonResponse store(StoreprofilRequest $request)
+ * @method JsonResponse show(Profil $profil)
+ * @method JsonResponse update(UpdateprofilRequest $request, Profil $profil)
+ * @method JsonResponse destroy(Profil $profil)
+ * @
+ */
 class ProfilController extends Controller implements ProfileInterface
 {
     use AuthorizesRequests;
@@ -40,6 +52,8 @@ class ProfilController extends Controller implements ProfileInterface
      * Display a listing of the resource by role.
      *
      * @param Profil $profil
+     * @param Request $request
+     * @response array{message: string, success: bool, data: array{Profils : array{nom: string, prenom: string, email: string, statut: string, created_at: string, updated_at: string}}}
      * @return  JsonResponse
      */
     public function index(Request $request, Profil $profil): JsonResponse
@@ -51,7 +65,9 @@ class ProfilController extends Controller implements ProfileInterface
     /**
      * Store a newly created profil resource in storage.
      * @param StoreprofilRequest $request
+     * @response array{message: string, success: bool, data: array{nom: string, prenom: string, email: string, statut: string, created_at: string, updated_at: string}}
      * @return JsonResponse
+     * 
      */
     public function store(StoreprofilRequest $request): JsonResponse
     {
@@ -66,6 +82,7 @@ class ProfilController extends Controller implements ProfileInterface
      * Display unique profil resource.
      *
      * @param profil $profil
+     * @response array{message: string, success: bool, data: array{nom: string, prenom: string, email: string, statut: string, created_at: string, updated_at: string}}
      * @return JsonResponse
      */
     public function show(Profil $profil): JsonResponse
@@ -82,6 +99,7 @@ class ProfilController extends Controller implements ProfileInterface
      *
      * @param UpdateprofilRequest $request
      * @param profil $profil
+     * @response array{message: string, success: bool, data: array{nom: string, prenom: string, email: string, statut: string, created_at: string, updated_at: string}}
      * @return JsonResponse
      */
     public function update(UpdateprofilRequest $request, profil $profil): JsonResponse
@@ -97,6 +115,7 @@ class ProfilController extends Controller implements ProfileInterface
      * Remove the profil resource from storage.
      *
      * @param profil $profil
+     * @response array{message: string, success: bool, data: null}
      * @return JsonResponse
      */
     public function destroy(Profil $profil): JsonResponse
