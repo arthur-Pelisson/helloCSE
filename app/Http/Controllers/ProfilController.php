@@ -44,7 +44,7 @@ class ProfilController extends Controller implements ProfileInterface
      */
     public function index(Request $request, Profil $profil): JsonResponse
     {
-        $profils = $this->profilService->index($profil, $this->isAdmin);
+        $profils = $this->profilService->index($profil);
         return ResponseApi::success(new ProfilCollection($profils), "Profils found", 200);
     }
 
