@@ -1,26 +1,49 @@
 <?php
 
 namespace App\Services;
+
 use App\Models\Profil;
 use App\Enums\StatutProfil;
+use App\Redis\CacheService;
 use Illuminate\Database\Eloquent\Collection;
+use App\Http\Controllers\AdminController;
+class ProfilService
+{
 
+    private CacheService $cacheService;
+    public string $cacheKey = 'profil';
+    private string $role;
 
-class ProfilService {
+    public function __construct(CacheService $cacheService, AdminController $adminController)
+    {
+        $this->cacheService = $cacheService;
+        $this->role = $adminController::isAdmin() ? "ADMIN" : "USER";
+    }
 
-
+    
     /**
      * @param Profil $profil
      * @param bool $isAdmin
      * @return Collection
      */
-    public function index(Profil $profil, bool $isAdmin): Collection
+
+    public function index(Profil $profil): Collection
     {
-        $role = $isAdmin ? "ADMIN" : "GUEST";
-        if ($role === "ADMIN") {
-            return $profil->all();
+        $cacheKey = "{$this->cacheKey}-getAll-{$this->role}";
+
+        if ($this->cacheService->exists($cacheKey)) {
+            return $this->cacheService->get($cacheKey);
         }
-        return $profil->ByStatus(StatutProfil::ACTIF)->get();
+       
+        if ($this->role === "ADMIN") {
+            $profils = $profil->all(); 
+        } else {
+            $profils = $profil->ByStatus(StatutProfil::ACTIF)->get();
+        }
+        
+        $this->cacheService->store($cacheKey, $profils);
+
+        return $profils; 
     }
 
     /**
@@ -29,6 +52,10 @@ class ProfilService {
      */
     public function store(array $validated): Profil
     {
+        $newProfil = Profil::create($validated);
+        if ($newProfil) {
+            $this->cacheService->delete($this->cacheKey."-getAll-".$this->role);
+        }
         return Profil::create($validated);
     }
 
@@ -38,6 +65,10 @@ class ProfilService {
      */
     public function show(Profil $profil): Profil
     {
+        if ($this->cacheService->exists($this->cacheKey."-".$profil->id)) {
+            return $this->cacheService->get($this->cacheKey."-".$profil->id);
+        }
+        $this->cacheService->store($this->cacheKey."-".$profil->id, $profil);
         return $profil;
     }
 
@@ -48,8 +79,9 @@ class ProfilService {
      */
     public function update(array $validated, Profil $profil): Profil|bool
     {
-        
+
         if ($profil->update($validated)) {
+            $this->cacheService->delete($this->cacheKey."-".$profil->id);
             return $profil;
         }
         return false;
@@ -61,6 +93,7 @@ class ProfilService {
      */
     public function destroy(Profil $profil): bool
     {
+        $this->cacheService->delete($this->cacheKey."-".$profil->id);
         return $profil->delete();
     }
-} 
+}
